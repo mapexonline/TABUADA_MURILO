@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desafio Murilo Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center">
+  <audio id="somAcerto" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+  </audio>
+  <audio id="somErro" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+  </audio>
+  <div id="intro" class="absolute inset-0 flex items-center justify-center z-40">
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center space-y-4">
+      <h1 class="text-2xl font-bold text-indigo-700">Murilo, prepare-se!</h1>
+      <p class="text-base text-indigo-600">Essa é sua missão relâmpago com multiplicações!</p>
+      <button onclick="iniciarDesafio()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 text-base">Começar</button>
+    </div>
+  </div>
+  <div id="jogo" class="hidden flex flex-col items-center text-center space-y-4 bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+    <h2 class="text-xl font-bold text-indigo-700">Desafio Relâmpago!</h2>
+    <div class="text-lg text-gray-700">Tempo: <span id="tempo">60</span>s</div>
+    <div id="pergunta" class="text-2xl font-bold text-indigo-800">Quanto é 2 x 5?</div>
+    <input id="resposta" type="number" class="w-full p-2 rounded-md border-2 border-indigo-300 text-center text-lg" placeholder="Digite sua resposta" />
+    <button onclick="verificarResposta()" class="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 text-base">Responder</button>
+    <div class="text-sm text-gray-600">Pontos: <span id="pontos">0</span></div>
+  </div>
+  <div id="fim" class="hidden absolute inset-0 bg-white flex items-center justify-center text-center">
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-indigo-600">Fim do Desafio!</h2>
+      <p class="text-lg text-gray-700">Você fez <span id="scoreFinal">0</span> pontos!</p>
+      <button onclick="location.reload()" class="bg-indigo-500 text-white px-5 py-2 rounded-xl hover:bg-indigo-600">Jogar Novamente</button>
+    </div>
+  </div>
+  <footer class="fixed bottom-1 w-full px-6 flex justify-between text-xs text-gray-600 z-10">
+    <div>Desenvolvedor: mapexonline22@gmail.com</div>
+    <div class="font-semibold text-indigo-700">Mobile Turbo</div>
+  </footer>
+  <script>
+    let tempo = 60, pontos = 0, timer, num1, num2;
+    const somAcerto = document.getElementById("somAcerto");
+    const somErro = document.getElementById("somErro");
+    function iniciarDesafio() {
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("jogo").classList.remove("hidden");
+      gerarPergunta();
+      timer = setInterval(() => {
+        tempo--;
+        document.getElementById("tempo").textContent = tempo;
+        if (tempo <= 0) {
+          clearInterval(timer);
+          finalizarDesafio();
+        }
+      }, 1000);
+    }
+    function gerarPergunta() {
+      num1 = Math.floor(Math.random() * 8) + 2;
+      num2 = Math.floor(Math.random() * 8) + 2;
+      document.getElementById("pergunta").textContent = `Quanto é ${num1} x ${num2}?`;
+      document.getElementById("resposta").value = '';
+      document.getElementById("resposta").focus();
+    }
+    async function verificarResposta() {
+      const input = document.getElementById("resposta").value.trim();
+      if (input === "") {
+        alert("Ops, escreva o resultado!");
+        return;
+      }
+      const resposta = parseInt(input);
+      if (resposta === num1 * num2) {
+        pontos++;
+        document.getElementById("pontos").textContent = pontos;
+        somAcerto.currentTime = 0;
+        await somAcerto.play();
+        setTimeout(gerarPergunta, 200);
+      } else {
+        somErro.currentTime = 0;
+        await somErro.play();
+      }
+    }
+    function finalizarDesafio() {
+      document.getElementById("jogo").classList.add("hidden");
+      document.getElementById("fim").classList.remove("hidden");
+      document.getElementById("scoreFinal").textContent = pontos;
+    }
+  </script>
+</body>
+</html>
